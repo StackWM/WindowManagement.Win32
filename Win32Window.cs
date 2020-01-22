@@ -1,17 +1,15 @@
 ﻿namespace LostTech.Stack.WindowManagement {
     using System;
     using System.Diagnostics;
+    using System.Drawing;
     using System.Runtime.InteropServices;
     using System.Threading.Tasks;
     using JetBrains.Annotations;
-    using LostTech.Stack.Utils;
     using LostTech.Stack.WindowManagement.WinApi;
     using PInvoke;
     using static PInvoke.User32;
     using Win32Exception = System.ComponentModel.Win32Exception;
     using Rect = System.Drawing.RectangleF;
-    using System.Drawing;
-    using System.Collections.Generic;
 
     [DebuggerDisplay("{" + nameof(Title) + "}")]
     public sealed class Win32Window : IAppWindow, IEquatable<Win32Window>

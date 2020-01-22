@@ -3,7 +3,6 @@
     using System.Collections.Generic;
     using System.Runtime.InteropServices;
     using JetBrains.Annotations;
-    using LostTech.Stack.Utils;
     using static PInvoke.User32;
     using Win32Exception = System.ComponentModel.Win32Exception;
 

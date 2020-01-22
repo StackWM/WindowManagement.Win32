@@ -10,15 +10,13 @@
 
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="2019.1.3" />
+    <PackageReference Include="LostTech.VirtualDesktop" Version="0.0.1" />
     <PackageReference Include="PInvoke.DwmApi" Version="0.6.6" />
     <PackageReference Include="PInvoke.User32" Version="0.6.6" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\WindowManagement\WindowManagement.csproj" />
-    <ProjectReference Include="..\..\External\VirtualDesktop\source\VirtualDesktop\VirtualDesktop.csproj">
-      <Private>false</Private>
-    </ProjectReference>
   </ItemGroup>
 
 </Project>

@@ -229,6 +229,8 @@
             }
         }
 
+        public bool IsVisibleInAppSwitcher => Win32WindowFactory.DisplayInSwitchToList(this);
+
         [Obsolete("This API may not be supported in this version")]
         public bool IsVisibleOnAllDesktops {
             get {

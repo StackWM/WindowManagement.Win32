@@ -32,7 +32,7 @@
             return done ? null : new Win32Exception();
         }
 
-        public bool DisplayInSwitchToList([NotNull] Win32Window window) {
+        internal static bool DisplayInSwitchToList([NotNull] Win32Window window) {
             if (window == null) throw new ArgumentNullException(nameof(window));
 
             if (!window.IsVisible)

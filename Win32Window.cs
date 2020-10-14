@@ -7,6 +7,7 @@
     using JetBrains.Annotations;
     using LostTech.Stack.WindowManagement.WinApi;
     using PInvoke;
+    using WindowsDesktop.Interop;
     using static PInvoke.User32;
     using Win32Exception = System.ComponentModel.Win32Exception;
     using Rect = System.Drawing.RectangleF;
@@ -182,12 +183,27 @@
                 Guid? desktopId = null;
 
                 var timer = Stopwatch.StartNew();
-                COMException e = null;
+                Exception e = null;
                 while (timer.Elapsed < this.ShellUnresposivenessTimeout) {
                     try {
                         desktopId = VirtualDesktopStub.IdFromHwnd(this.Handle);
                         e = null;
                         break;
+                    } catch (COMException ex) when (ex.Match(WindowsDesktop.Interop.HResult.RPC_E_CANTCALLOUT_ININPUTSYNCCALL)) {
+                        e = ex;
+                        var async = Task.Run(() => desktopId = VirtualDesktopStub.IdFromHwnd(this.Handle));
+                        var waitFor = this.ShellUnresposivenessTimeout - timer.Elapsed;
+                        if (waitFor.Ticks < 0)
+                            break;
+                        try {
+                            if (async.Wait(waitFor)) {
+                                e = null;
+                                break;
+                            }
+                        } catch(AggregateException asyncEx) {
+                            e = asyncEx;
+                            break;
+                        }
                     } catch (COMException ex) {
                         e = ex;
                     }

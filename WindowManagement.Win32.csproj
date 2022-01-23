@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net462;net5.0-windows</TargetFrameworks>
+    <TargetFrameworks>net462;net6.0-windows</TargetFrameworks>
     <AssemblyName>LostTech.Stack.WindowManagement.Win32</AssemblyName>
     <RootNamespace>LostTech.Stack.WindowManagement</RootNamespace>
     <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
@@ -9,14 +9,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations" Version="2019.1.3" />
+    <PackageReference Include="JetBrains.Annotations" Version="2021.3.0" />
     <PackageReference Include="LostTech.VirtualDesktop" Version="0.0.3" />
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0">
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="PInvoke.DwmApi" Version="0.6.6" />
-    <PackageReference Include="PInvoke.User32" Version="0.6.6" />
+    <PackageReference Include="PInvoke.DwmApi" Version="0.7.104" />
+    <PackageReference Include="PInvoke.User32" Version="0.7.104" />
   </ItemGroup>
 
   <ItemGroup>

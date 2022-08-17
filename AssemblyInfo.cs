@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyVersion("1.2.*")]
+[assembly: AssemblyVersion("2.0.*")]
 [assembly: AssemblyCompany("Lost Tech LLC")]
 [assembly: AssemblyProduct("Stack")]
 [assembly: AssemblyCopyright("Copyright © Lost Tech LLC 2022")]

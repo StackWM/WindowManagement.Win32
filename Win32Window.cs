@@ -247,31 +247,6 @@
 
         public bool IsVisibleInAppSwitcher => Win32WindowFactory.DisplayInSwitchToList(this);
 
-        [Obsolete("This API may not be supported in this version")]
-        public bool IsVisibleOnAllDesktops {
-            get {
-                if (!VirtualDesktopStub.IsSupported)
-                    return false;
-
-                try {
-                    return VirtualDesktopStub.IsPinnedWindow(this.Handle);
-                } catch (COMException e)
-                    when (WinApi.HResult.TYPE_E_ELEMENTNOTFOUND.EqualsCode(e.HResult)) {
-                    this.Closed?.Invoke(this, EventArgs.Empty);
-                    throw new WindowNotFoundException(innerException: e);
-                } catch (COMException e) {
-                    e.ReportAsWarning();
-                    return false;
-                } catch (Win32Exception e) {
-                    e.ReportAsWarning();
-                    return false;
-                } catch (ArgumentException e) {
-                    e.ReportAsWarning();
-                    return false;
-                }
-            }
-        }
-
         public bool IsResizable =>
             ((WindowStyles)GetWindowLong(this.Handle, WindowLongIndexFlags.GWL_STYLE))
             .HasFlag(WindowStyles.WS_SIZEFRAME);

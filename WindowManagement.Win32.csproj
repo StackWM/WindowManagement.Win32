@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="2021.3.0" />
-    <PackageReference Include="LostTech.VirtualDesktop" Version="0.0.4" />
+    <PackageReference Include="LostTech.VirtualDesktop" Version="0.0.6-clean" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="LostTech.Stack.WindowManagement" Version="2.0.1" />
+    <PackageReference Include="LostTech.Stack.WindowManagement" Version="3.0.0-clean" />
   </ItemGroup>
 
 </Project>

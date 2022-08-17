@@ -35,7 +35,7 @@
         internal static bool DisplayInSwitchToList([NotNull] Win32Window window) {
             if (window == null) throw new ArgumentNullException(nameof(window));
 
-            if (!window.IsVisible)
+            if (!IsWindowVisible(window.Handle))
                 return false;
 
             IntPtr rootOwner = GetAncestor(window.Handle, GetAncestorFlags.GA_ROOTOWNER);
@@ -49,7 +49,7 @@
                     break;
                 activePopup = newInnerPopup;
             }
-            return activePopup == window.Handle;
+            return activePopup == window.Handle && window.IsVisible;
         }
 
         Win32Window CreateIfNotNull(IntPtr handle) =>

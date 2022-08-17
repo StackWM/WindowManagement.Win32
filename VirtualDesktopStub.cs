@@ -24,20 +24,14 @@
         }
         public static bool HasMinimalSupport => virtualDesktopLoaded && GetHasMinimalSupport();
         [MethodImpl(MethodImplOptions.NoInlining)]
-        static bool GetHasMinimalSupport() => VirtualDesktop.HasMinimalSupport;
+        static bool GetHasMinimalSupport() => VirtualDesktop.IsPresent;
 
-        public static bool IsSupported => virtualDesktopLoaded && GetIsSupported();
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        static bool GetIsSupported() => VirtualDesktop.IsSupported;
+        public static bool IsSupported => false;
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static Guid? IdFromHwnd(IntPtr handle) => VirtualDesktop.IdFromHwnd(handle);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static bool IsCurrentVirtualDesktop(IntPtr handle) => VirtualDesktopHelper.IsCurrentVirtualDesktop(handle);
-
-        [Obsolete]
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        public static bool IsPinnedWindow(IntPtr handle) => VirtualDesktop.IsPinnedWindow(handle);
     }
 }

@@ -180,6 +180,9 @@
                     return false;
                 if (!VirtualDesktopStub.HasMinimalSupport)
                     return true;
+                if (this.IsPopup)
+                    return this.IsOnCurrentDesktop;
+
                 Guid? desktopId = null;
 
                 var timer = Stopwatch.StartNew();
@@ -247,9 +250,11 @@
 
         public bool IsVisibleInAppSwitcher => Win32WindowFactory.DisplayInSwitchToList(this);
 
-        public bool IsResizable =>
-            ((WindowStyles)GetWindowLong(this.Handle, WindowLongIndexFlags.GWL_STYLE))
-            .HasFlag(WindowStyles.WS_SIZEFRAME);
+        public WindowStyles Styles => (WindowStyles)GetWindowLong(this.Handle, WindowLongIndexFlags.GWL_STYLE);
+        public WindowStylesEx StylesEx => (WindowStylesEx)GetWindowLong(this.Handle, WindowLongIndexFlags.GWL_EXSTYLE);
+
+        public bool IsResizable => this.Styles.HasFlag(WindowStyles.WS_SIZEFRAME);
+        public bool IsPopup => this.Styles.HasFlag(WindowStyles.WS_POPUP);
 
         public Task<Exception> Activate() {
             Exception error = this.EnsureNotMinimized();

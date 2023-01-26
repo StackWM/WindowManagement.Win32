@@ -4,6 +4,7 @@
     <TargetFrameworks>net462;net6.0-windows</TargetFrameworks>
     <AssemblyName>LostTech.Stack.WindowManagement.Win32</AssemblyName>
     <RootNamespace>LostTech.Stack.WindowManagement</RootNamespace>
+    <LangVersion>11</LangVersion>
     <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
     <Deterministic>False</Deterministic>
   </PropertyGroup>

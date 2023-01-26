@@ -1,4 +1,6 @@
-﻿namespace LostTech.Stack.WindowManagement {
+﻿#nullable enable
+
+namespace LostTech.Stack.WindowManagement {
     using System;
     using System.Diagnostics;
     using System.Drawing;
@@ -13,8 +15,7 @@
     using Rect = System.Drawing.RectangleF;
 
     [DebuggerDisplay("{" + nameof(Title) + "}")]
-    public sealed class Win32Window : IAppWindow, IEquatable<Win32Window>
-    {
+    public sealed class Win32Window : IAppWindow, IEquatable<Win32Window> {
         readonly Lazy<bool> excludeFromMargin;
         public IntPtr Handle { get; }
         public bool SuppressSystemMargin { get; set; }
@@ -128,9 +129,9 @@
                 return hIcon;
 
             try {
-                string exePath = GetExecutablePathAboveVista(processID);
+                string? exePath = GetExecutablePathAboveVista(processID);
                 if (exePath?.EndsWith("ApplicationFrameHost.exe", StringComparison.OrdinalIgnoreCase) == true) {
-                    Win32Window uwpWindow = null;
+                    Win32Window? uwpWindow = null;
                     this.ForEachChild(child => {
                         int threadID = GetWindowThreadProcessId(child.Handle, out int childProcessID);
                         if (threadID == 0 || childProcessID == processID)
@@ -143,8 +144,8 @@
                     if (uwpWindow != null)
                         return await uwpWindow.GetIcon(dpi).ConfigureAwait(false);
                 }
-                using (var icon = Icon.ExtractAssociatedIcon(exePath))
-                    return icon.Handle;
+                using var icon = Icon.ExtractAssociatedIcon(exePath);
+                return icon.Handle;
             } catch (ArgumentException) { } catch (InvalidOperationException) { } catch (Exception e) {
                 Debug.WriteLine(e);
                 return hIcon;
@@ -164,7 +165,7 @@
             }
         }
 
-        public string Class {
+        public string? Class {
             get {
                 try {
                     return GetClassName(this.Handle);
@@ -187,7 +188,7 @@
                 Guid? desktopId = null;
 
                 var timer = Stopwatch.StartNew();
-                Exception e = null;
+                Exception? e = null;
                 while (timer.Elapsed < this.ShellUnresposivenessTimeout) {
                     try {
                         desktopId = VirtualDesktopStub.IdFromHwnd(this.Handle);
@@ -204,7 +205,7 @@
                                 e = null;
                                 break;
                             }
-                        } catch(AggregateException asyncEx) {
+                        } catch (AggregateException asyncEx) {
                             e = asyncEx;
                             break;
                         }
@@ -257,14 +258,14 @@
         public bool IsResizable => this.Styles.HasFlag(WindowStyles.WS_SIZEFRAME);
         public bool IsPopup => this.Styles.HasFlag(WindowStyles.WS_POPUP);
 
-        public Task<Exception> Activate() {
-            Exception error = this.EnsureNotMinimized();
+        public Task<Exception?> Activate() {
+            Exception? error = this.EnsureNotMinimized();
             return Task.FromResult(
                 SetForegroundWindow(this.Handle) ? error : this.GetLastError());
         }
 
-        public Task<Exception> BringToFront() {
-            Exception issue = this.EnsureNotMinimized();
+        public Task<Exception?> BringToFront() {
+            Exception? issue = this.EnsureNotMinimized();
             if (!SetWindowPos(this.Handle, GetForegroundWindow(), 0, 0, 0, 0,
                               SetWindowPosFlags.SWP_NOMOVE | SetWindowPosFlags.SWP_NOACTIVATE |
                               SetWindowPosFlags.SWP_NOSIZE))
@@ -272,8 +273,8 @@
             return Task.FromResult(issue);
         }
 
-        public Task<Exception> SendToBottom() {
-            Exception issue = this.EnsureNotMinimized();
+        public Task<Exception?> SendToBottom() {
+            Exception? issue = this.EnsureNotMinimized();
             if (!SetWindowPos(this.Handle, HWND_BOTTOM, 0, 0, 0, 0,
                 SetWindowPosFlags.SWP_NOMOVE | SetWindowPosFlags.SWP_NOACTIVATE |
                 SetWindowPosFlags.SWP_NOSIZE))
@@ -284,35 +285,35 @@
         /// <summary>
         /// Unreliable, may fire multiple times
         /// </summary>
-        public event EventHandler Closed;
+        public event EventHandler? Closed;
 
         [MustUseReturnValue]
-        Exception EnsureNotMinimized() {
+        Exception? EnsureNotMinimized() {
             if (!IsIconic(this.Handle))
                 return null;
 
             return ShowWindow(this.Handle, WindowShowStyle.SW_RESTORE) ? null : this.GetLastError();
         }
 
-        public bool Equals(Win32Window other) {
-            if (ReferenceEquals(null, other))
+        public bool Equals(Win32Window? other) {
+            if (other is null)
                 return false;
             if (ReferenceEquals(this, other))
                 return true;
             return this.Handle.Equals(other.Handle);
         }
 
-        public override bool Equals(object obj) {
-            if (ReferenceEquals(null, obj))
+        public override bool Equals(object? obj) {
+            if (obj is null)
                 return false;
             if (ReferenceEquals(this, obj))
                 return true;
             if (obj.GetType() != this.GetType())
                 return false;
-            return this.Equals((Win32Window) obj);
+            return this.Equals((Win32Window)obj);
         }
 
-        public Exception ForEachChild(Func<Win32Window, bool> action) {
+        public Exception? ForEachChild(Func<Win32Window, bool> action) {
             if (action == null)
                 throw new ArgumentNullException(nameof(action));
 
@@ -330,16 +331,12 @@
             if (processID == 0)
                 return false;
             try {
-                Process process = Process.GetProcessById(processID);
-                switch (process.ProcessName) {
-                case "explorer":
-                case "Everything":
-                    return true;
-                default:
-                    return false;
-                }
-            } catch (ArgumentException) { } catch (InvalidOperationException) { }
-            catch (Exception e) {
+                var process = Process.GetProcessById(processID);
+                return process.ProcessName switch {
+                    "explorer" or "Everything" => true,
+                    _ => false,
+                };
+            } catch (ArgumentException) { } catch (InvalidOperationException) { } catch (Exception e) {
                 Debug.WriteLine(e);
                 return false;
             }
@@ -386,7 +383,7 @@
         [DllImport("User32.dll", SetLastError = true)]
         static extern bool EnumChildWindows(IntPtr parentHandle, EnumChildProc callback, IntPtr lParam);
         delegate bool EnumChildProc(IntPtr hwnd, IntPtr lParam);
-        static string GetExecutablePathAboveVista(int ProcessId) {
+        static string? GetExecutablePathAboveVista(int ProcessId) {
             using (var hprocess = Kernel32.OpenProcess(0x1000, false, ProcessId)) {
                 if (hprocess.DangerousGetHandle() != IntPtr.Zero) {
                     string imageName = Kernel32.QueryFullProcessImageName(hprocess);
@@ -404,14 +401,14 @@
         static extern bool IsIconic(IntPtr hwnd);
 
         // ReSharper disable InconsistentNaming
-        static readonly IntPtr HWND_BOTTOM = new IntPtr(1);
+        static readonly IntPtr HWND_BOTTOM = new(1);
         static readonly IntPtr HWND_TOP = IntPtr.Zero;
-        static readonly IntPtr HWND_NOTOPMOST = new IntPtr(-2);
+        static readonly IntPtr HWND_NOTOPMOST = new(-2);
         // ReSharper restore InconsistentNaming
 
         public TimeSpan ShellUnresposivenessTimeout { get; set; } = TimeSpan.FromMilliseconds(300);
 
-        enum ClassLong: int {
+        enum ClassLong : int {
             GCLP_HICONSM = -34,
         }
 

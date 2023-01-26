@@ -153,10 +153,11 @@
             return hIcon;
         });
 
-        public string Title {
+        string? lastTitle;
+        public string? Title {
             get {
                 try {
-                    return GetWindowText(this.Handle);
+                    return this.lastTitle = GetWindowText(this.Handle);
                 } catch (PInvoke.Win32Exception) {
                     return null;
                 }
@@ -217,7 +218,7 @@
                         throw new ShellUnresponsiveException(e);
 
                     this.Closed?.Invoke(this, EventArgs.Empty);
-                    throw new WindowNotFoundException();
+                    throw this.WindowNotFoundException_();
                 }
                 return desktopId != null && desktopId != Guid.Empty;
             }
@@ -234,7 +235,7 @@
                 } catch (COMException e)
                     when (WinApi.HResult.TYPE_E_ELEMENTNOTFOUND.EqualsCode(e.HResult)) {
                     this.Closed?.Invoke(this, EventArgs.Empty);
-                    throw new WindowNotFoundException(innerException: e);
+                    throw this.WindowNotFoundException_(innerException: e);
                 } catch (COMException e) {
                     e.ReportAsWarning();
                     return true;
@@ -413,5 +414,13 @@
         enum ClassLong: int {
             GCLP_HICONSM = -34,
         }
+
+        WindowNotFoundException WindowNotFoundException_(Exception? innerException = null)
+            => new(innerException) {
+                Data = {
+                    { "LastTitle", this.lastTitle },
+                    { "Handle", this.Handle },
+                },
+            };
     }
 }

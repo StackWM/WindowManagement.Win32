@@ -15,7 +15,7 @@ namespace LostTech.Stack.WindowManagement {
     using Rect = System.Drawing.RectangleF;
 
     [DebuggerDisplay("{" + nameof(Title) + "}")]
-    public sealed class Win32Window : IAppWindow, IEquatable<Win32Window> {
+    public sealed class Win32Window: IAppWindow, IEquatable<Win32Window> {
         readonly Lazy<bool> excludeFromMargin;
         public IntPtr Handle { get; }
         public bool SuppressSystemMargin { get; set; }
@@ -101,7 +101,7 @@ namespace LostTech.Stack.WindowManagement {
 
         public Task<Rect> GetClientBounds() => Task.Run(() => {
             DwmGetWindowAttribute(this.Handle,
-                DwmApi.DWMWINDOWATTRIBUTE.DWMWA_CAPTION_BUTTON_BOUNDS, out var buttonBounds,
+                DwmApi.DWMWINDOWATTRIBUTE.DWMWA_CAPTION_BUTTON_BOUNDS, out RECT buttonBounds,
                 Marshal.SizeOf<RECT>());
 
             var bounds = this.Bounds;
@@ -225,6 +225,14 @@ namespace LostTech.Stack.WindowManagement {
             }
         }
 
+        public bool? IsCloaked {
+            get {
+                var result = DwmGetWindowAttribute(this.Handle, out Cloaking value);
+                if (!result.Succeeded) return null;
+                return value != Cloaking.None;
+            }
+        }
+
         public bool IsValid => IsWindow(this.Handle);
         public bool IsOnCurrentDesktop {
             get {
@@ -345,7 +353,7 @@ namespace LostTech.Stack.WindowManagement {
 
         static RECT GetSystemMargin(IntPtr handle) {
             PInvoke.HResult success = DwmGetWindowAttribute(handle, DwmApi.DWMWINDOWATTRIBUTE.DWMWA_EXTENDED_FRAME_BOUNDS,
-                out var withMargin, Marshal.SizeOf<RECT>());
+                out RECT withMargin, Marshal.SizeOf<RECT>());
             if (!success.Succeeded) {
                 Debug.WriteLine($"DwmGetWindowAttribute: {success.GetException()}");
                 return new RECT();
@@ -396,6 +404,13 @@ namespace LostTech.Stack.WindowManagement {
 
         [DllImport("Dwmapi.dll")]
         static extern PInvoke.HResult DwmGetWindowAttribute(IntPtr hwnd, DwmApi.DWMWINDOWATTRIBUTE attribute, out RECT value, int valueSize);
+        [DllImport("Dwmapi.dll")]
+        static extern PInvoke.HResult DwmGetWindowAttribute(IntPtr hwnd, DwmApi.DWMWINDOWATTRIBUTE attribute, out Cloaking value, int valueSize);
+
+        static PInvoke.HResult DwmGetWindowAttribute(IntPtr hwnd, out Cloaking value)
+            => DwmGetWindowAttribute(hwnd, DwmApi.DWMWINDOWATTRIBUTE.DWMWA_CLOAKED,
+                                     out value,
+                                     Marshal.SizeOf(typeof(Cloaking).GetEnumUnderlyingType()));
 
         [DllImport("User32.dll")]
         static extern bool IsIconic(IntPtr hwnd);
@@ -408,8 +423,12 @@ namespace LostTech.Stack.WindowManagement {
 
         public TimeSpan ShellUnresposivenessTimeout { get; set; } = TimeSpan.FromMilliseconds(300);
 
-        enum ClassLong : int {
+        enum ClassLong: int {
             GCLP_HICONSM = -34,
+        }
+
+        enum Cloaking: int {
+            None = 0,
         }
 
         WindowNotFoundException WindowNotFoundException_(Exception? innerException = null)

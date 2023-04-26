@@ -38,6 +38,9 @@
             if (!IsWindowVisible(window.Handle))
                 return false;
 
+            if (window.IsCloaked == true)
+                return false;
+
             IntPtr rootOwner = GetAncestor(window.Handle, GetAncestorFlags.GA_ROOTOWNER);
 
             IntPtr activePopup = rootOwner;

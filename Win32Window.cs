@@ -194,7 +194,7 @@ namespace LostTech.Stack.WindowManagement {
                         desktopId = VirtualDesktopStub.IdFromHwnd(this.Handle);
                         e = null;
                         break;
-                    } catch (COMException ex) when (ex.Match(WindowsDesktop.Interop.HResult.RPC_E_CANTCALLOUT_ININPUTSYNCCALL)) {
+                    } catch (COMException ex) when (ex.Match(WinApi.HResult.RPC_E_CANTCALLOUT_ININPUTSYNCCALL)) {
                         e = ex;
                         var async = Task.Run(() => desktopId = VirtualDesktopStub.IdFromHwnd(this.Handle));
                         var waitFor = this.ShellUnresposivenessTimeout - timer.Elapsed;

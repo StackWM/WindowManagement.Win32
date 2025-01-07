@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net462;net6.0-windows</TargetFrameworks>
+    <TargetFrameworks>net462;net8.0-windows</TargetFrameworks>
     <AssemblyName>LostTech.Stack.WindowManagement.Win32</AssemblyName>
     <RootNamespace>LostTech.Stack.WindowManagement</RootNamespace>
     <LangVersion>11</LangVersion>
@@ -11,8 +11,8 @@
 
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="2021.3.0" />
-    <PackageReference Include="LostTech.VirtualDesktop" Version="0.0.6-clean" />
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2">
+    <PackageReference Include="LostTech.VirtualDesktop" Version="0.0.8-pre0" />
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="LostTech.Stack.WindowManagement" Version="3.0.0-clean" />
+    <PackageReference Include="LostTech.Stack.WindowManagement" Version="3.0.2-a0" />
   </ItemGroup>
 
 </Project>
